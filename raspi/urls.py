@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import RaspberryPiInfoView, NodeView, NodeConnectionView, ThemeView
+from .views import RaspberryPiInfoView, NodeView, ThemeView
 from commandpage.views import TasksView, ConditionalTasksView
 
 urlpatterns = [
@@ -27,6 +27,5 @@ urlpatterns = [
     path('tasks/', TasksView.as_view()),
     path('tasks/cond/', ConditionalTasksView.as_view()),
     path('nodes/<str:node_type>/', NodeView.as_view()),
-    path('node/<int:node_id>/', NodeConnectionView.as_view()),
     path('theme/', ThemeView.as_view()),
 ]

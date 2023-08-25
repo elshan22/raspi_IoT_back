@@ -29,27 +29,15 @@ class NodeView(APIView):
 
     def get(self, request, node_type):
         if node_type == 'all':
-            data = self.serializer_class(Node.objects.all(), many=True).data
+            nodes = Node.objects.all()
+            devices = subprocess.run(['arp', '-e'], capture_output=True, text=True).stdout
+            for node in nodes:
+                node.connected = True if re.match(f'.*{node.macaddress}.*', devices) else False
+                node.save()
+            data = self.serializer_class(nodes, many=True).data
         else:
             data = self.serializer_class(Node.objects.filter(type=node_type), many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
-
-
-class NodeConnectionView(APIView):
-    serializer_class = NodeSerializer
-    permission_classes = [AllowAny]
-
-    def get(self, request, node_id):
-        try:
-            node = Node.objects.get(id=node_id)
-            data = self.serializer_class(node).data
-            devices = subprocess.run(['arp', '-e'], capture_output=True, text=True).stdout
-            data['connected'] = 'connected' if re.match(f'.*{node.macaddress}.*', devices) else 'disconnected'
-            return Response(data=data, status=status.HTTP_200_OK)
-        except subprocess.CalledProcessError:
-            return Response(data={}, status=status.HTTP_400_BAD_REQUEST)
-        except Node.DoesNotExist:
-            return Response(data={}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ThemeView(APIView):
