@@ -92,7 +92,7 @@ def blink_task(node_id, count, duration):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect('192.168.154.176', 8000)
+client.connect('192.168.154.176', 1883)
 client.subscribe('raspi/actuators')
 client.loop_start()
 
