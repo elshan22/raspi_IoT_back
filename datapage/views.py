@@ -44,7 +44,7 @@ def on_message(client, userdata, message):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-client.connect('192.168.154.176', 1883)
+client.connect('127.0.0.1', 1883)
 client.subscribe('raspi/sensors')
 client.loop_start()
 
