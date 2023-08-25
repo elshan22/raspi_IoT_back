@@ -30,9 +30,10 @@ class NodeView(APIView):
     def get(self, request, node_type):
         if node_type == 'all':
             nodes = Node.objects.all()
-            devices = subprocess.run(['arp', '-e'], capture_output=True, text=True).stdout
+            devices = list(map(lambda x: x[0], re.findall('(([0-9a-f]{2}:){5}[0-9a-f]{2})',
+                subprocess.run(['arp', '-e'], capture_output=True, text=True).stdout.lower())))
             for node in nodes:
-                node.connected = True if re.match(f'.*{node.macaddress}.*', devices) else False
+                node.connected = node.macaddress.lower() in devices
                 node.save()
             data = self.serializer_class(nodes, many=True).data
         else:
