@@ -1,4 +1,4 @@
-from django.utils.timezone import now
+import os
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -7,7 +7,7 @@ from .serializers import NodeSerializer
 from .models import Node
 import subprocess
 import re
-
+from ping3 import ping
 
 darkMode = False
 
@@ -16,11 +16,7 @@ class RaspberryPiInfoView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        try:
-            username = subprocess.check_output(['whoami']).decode().strip()
-            return Response(data={'name': username}, status=status.HTTP_200_OK)
-        except subprocess.CalledProcessError as e:
-            return Response(data={}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={'name': os.getlogin()}, status=status.HTTP_200_OK)
 
 
 class NodeView(APIView):
@@ -30,10 +26,13 @@ class NodeView(APIView):
     def get(self, request, node_type):
         if node_type == 'all':
             nodes = Node.objects.all()
-            devices = list(map(lambda x: x[0], re.findall('(([0-9a-f]{2}:){5}[0-9a-f]{2})',
-                subprocess.run(['arp', '-e'], capture_output=True, text=True).stdout.lower())))
+            devices = {x[1]: x[0] for x in re.findall('\((\\d+.\\d+.\\d+.\\d+)\).*(([0-9a-f]{2}:){5}[0-9a-f]{2}).*',
+                subprocess.run(['arp', '-a'], capture_output=True, text=True).stdout.lower())}
             for node in nodes:
-                node.connected = node.macaddress.lower() in devices
+                if node.macaddress.lower() not in devices:
+                    node.connected = False
+                else:
+                    node.connected = ping(devices[node.macaddress.lower()]) is not None
                 node.save()
             data = self.serializer_class(nodes, many=True).data
         else:
