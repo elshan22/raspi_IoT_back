@@ -23,8 +23,6 @@ def on_message(client, userdata, message):
     json_object = json.loads(message.payload.decode())
     try:
         node = Node.objects.get(macaddress=json_object['node_id'])
-        node.last_connection = now()
-        node.save()
         if node.sensor_type == 'Temperature':
             Temperature.objects.create(node=node, temperature=json_object['current_temperature'])
             current = json_object['current_temperature']

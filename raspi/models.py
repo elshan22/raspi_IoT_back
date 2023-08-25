@@ -7,7 +7,6 @@ class Node(models.Model):
     room = models.IntegerField()
     type = models.CharField(choices=(('AC', 'Actuator'), ('SE', 'Sensor')), max_length=10)
     sensor_type = models.CharField(max_length=20, null=True, blank=True)
-    last_connection = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
 
 admin.site.register(Node)

@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from .serializers import NodeSerializer
 from .models import Node
 import subprocess
+import re
 
 
 darkMode = False
@@ -39,10 +40,16 @@ class NodeConnectionView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, node_id):
-        node = Node.objects.get(id=node_id)
-        data = self.serializer_class(node).data
-        data['last_difference'] = (now() - node.last_connection).total_seconds()
-        return Response(data=data, status=status.HTTP_200_OK)
+        try:
+            node = Node.objects.get(id=node_id)
+            data = self.serializer_class(node).data
+            devices = subprocess.run(['arp', '-e'], capture_output=True, text=True).stdout
+            data['connected'] = 'connected' if re.match(f'.*{node.macaddress}.*', devices) else 'disconnected'
+            return Response(data=data, status=status.HTTP_200_OK)
+        except subprocess.CalledProcessError:
+            return Response(data={}, status=status.HTTP_400_BAD_REQUEST)
+        except Node.DoesNotExist:
+            return Response(data={}, status=status.HTTP_404_NOT_FOUND)
 
 
 class ThemeView(APIView):

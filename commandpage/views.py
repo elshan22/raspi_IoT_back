@@ -21,9 +21,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, message):
     json_object = json.loads(message.payload.decode())
     try:
-        node = Node.objects.get(macaddress=json_object['mac_address'])
-        node.last_connection = now()
-        node.save()
+        Node.objects.get(macaddress=json_object['mac_address'])
     except Node.DoesNotExist:
         Node.objects.create(macaddress=json_object['mac_address'], room=json_object['room'], type='AC')
 
