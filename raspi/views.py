@@ -1,4 +1,4 @@
-import os
+import socket
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -16,7 +16,7 @@ class RaspberryPiInfoView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response(data={'name': os.getlogin()}, status=status.HTTP_200_OK)
+        return Response(data={'name': socket.gethostname()}, status=status.HTTP_200_OK)
 
 
 class NodeView(APIView):

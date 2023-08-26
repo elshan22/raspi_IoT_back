@@ -3,7 +3,6 @@ import json
 import paho.mqtt.client as mqtt
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
