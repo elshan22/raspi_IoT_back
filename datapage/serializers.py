@@ -11,7 +11,7 @@ class TemperatureSerializer(serializers.ModelSerializer):
 class TemperatureReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Temperature
-        fields = ('temperature', 'time')
+        fields = ('temperature', 'timestamp')
 
 
 class LightSerializer(serializers.ModelSerializer):
@@ -23,4 +23,4 @@ class LightSerializer(serializers.ModelSerializer):
 class LightReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Light
-        fields = ('light', 'time')
+        fields = ('light', 'timestamp')

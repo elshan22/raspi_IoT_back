@@ -6,10 +6,10 @@ from raspi.models import Node
 class Temperature(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     temperature = models.DecimalField(decimal_places=2, max_digits=5)
-    time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
 
 class Light(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     light = models.DecimalField(decimal_places=2, max_digits=6)
-    time = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
